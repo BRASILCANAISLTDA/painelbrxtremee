@@ -2,53 +2,64 @@ import requests
 import json
 import re
 
-# O uso de """ evita que o link quebre a linha no Python
-M3U_URL = """https://drive.google.com/file/d/1vKK2BLoFf5D3XLk6emMiHjf_kSENrOxL/view"""
+# Usamos as aspas triplas para garantir que a URL seja lida como um texto único
+M3U_URL = """https://drive.google.com/file/d/1vKK2BLoFf5D3XLk6emMiHjf_kSENrOxL/view?usp=drive_link, https://drive.google.com/file/d/1hsgIgHruheVVohyk9f_0HD5_l2EEZ1Ty/view?usp=drive_link, https://drive.google.com/file/d/1-wxqQ_liEZRQgmT4c95x1OdXIEc6shLH/view?usp=drive_link, https://drive.google.com/file/d/1a4j_ye4y7LYgAIt4sebXHdzh5eUmflkD/view?usp=drive_link, https://drive.google.com/file/d/1zYsjUOD0yaYyGTH4GXOxVkPYndoXItRf/view?usp=drive_link, https://drive.google.com/file/d/1cibQesdkDkay_fBjNkosB2q17U0SlUk3/view?usp=drive_link"""
 
 def processar():
     try:
-        print("Iniciando download da lista...")
-        # Adicionando um 'User-Agent' para o Google não bloquear o robô
+        print("Acessando a URL da lista...")
+        # O cabeçalho 'User-Agent' simula um navegador para o Google liberar o download
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         }
+        
         r = requests.get(M3U_URL, headers=headers, timeout=30)
         r.raise_for_status()
         
-        lines = r.text.splitlines()
+        conteudo = r.text
+        lines = conteudo.splitlines()
+        
         canais = []
-        categorias_set = set()
+        categorias_vistas = set()
         
         for i, line in enumerate(lines):
             if line.startswith('#EXTINF'):
+                # Busca a categoria no group-title
                 cat_match = re.search(r'group-title="([^"]+)"', line)
                 cat_name = cat_match.group(1) if cat_match else "Geral"
                 
+                # Busca o nome do canal
                 name_match = re.search(r',(.+)$', line)
                 stream_name = name_match.group(1).strip() if name_match else "Canal"
                 
                 if i + 1 < len(lines):
-                    url = lines[i+1].strip()
-                    if url.startswith('http'):
+                    url_canal = lines[i+1].strip()
+                    if url_canal.startswith('http'):
                         canais.append({
                             "name": stream_name,
                             "category_name": cat_name,
-                            "url": url
+                            "url": url_canal
                         })
-                        categorias_set.add(cat_name)
+                        categorias_vistas.add(cat_name)
 
-        resultado = {
+        # Formata as categorias para o padrão do Smarters
+        lista_categorias = [
+            {"category_id": str(index), "category_name": nome} 
+            for index, nome in enumerate(sorted(categorias_vistas))
+        ]
+        
+        resultado_final = {
             "live": canais,
-            "categories": [{"category_id": str(i), "category_name": c} for i, c in enumerate(sorted(categorias_set))]
+            "categories": lista_categorias
         }
 
         with open('canais.json', 'w', encoding='utf-8') as f:
-            json.dump(resultado, f, ensure_ascii=False, indent=4)
+            json.dump(resultado_final, f, ensure_ascii=False, indent=4)
         
-        print(f"Sucesso! {len(canais)} canais processados.")
+        print(f"Sucesso! {len(canais)} canais encontrados na URL.")
 
     except Exception as e:
-        print(f"Erro ao processar: {e}")
+        print(f"Erro ao ler a URL: {e}")
         exit(1)
 
 if __name__ == "__main__":
