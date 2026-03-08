@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel BR XTREME - Gestão</title>
+    <style>
+        body { font-family: sans-serif; background: #121212; color: white; padding: 20px; }
+        .card { background: #1e1e1e; padding: 20px; border-radius: 8px; max-width: 500px; margin-bottom: 20px; }
+        input, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; border: none; }
+        button { background: #28a745; color: white; cursor: pointer; font-weight: bold; }
+        button:hover { background: #218838; }
+        .token-sec { background: #333; padding: 10px; font-size: 12px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h2>🚀 Gerenciador de Clientes IPTV</h2>
+    
+    <div class="token-sec">
+        <input type="password" id="githubToken" placeholder="Cole seu Token do GitHub aqui">
+    </div>
+
+    <div class="card">
+        <h3>Cadastrar Novo Cliente</h3>
+        <input type="text" id="nomeCliente" placeholder="Nome do Cliente (ex: joao_silva)">
+        <input type="text" id="senhaCliente" placeholder="Defina uma Senha">
+        <select id="diasAcesso" style="width: 100%; padding: 10px; margin: 10px 0;">
+            <option value="1">Teste 24 Horas</option>
+            <option value="30">Mensal (30 dias)</option>
+            <option value="365">Anual (365 dias)</option>
+        </select>
+        <button onclick="gerarCliente()">Criar Acesso Vitalício/Data</button>
+    </div>
+
+    <div id="status"></div>
+
+    <script>
+        async function gerarCliente() {
+            const token = document.getElementById('githubToken').value;
+            const cliente = document.getElementById('nomeCliente').value.trim();
+            const senha = document.getElementById('senhaCliente').value;
+            const dias = document.getElementById('diasAcesso').value;
+            const statusDiv = document.getElementById('status');
+
+            if(!token || !cliente) return alert("Preencha o Token e o Nome!");
+
+            // Cálculo da Data de Expiração (Timestamp)
+            const expira = Math.floor(Date.now() / 1000) + (dias * 86400);
+            
+            const conteudoPHP = `<?php
+$data = [
+    "user_info" => [
+        "auth" => 1,
+        "status" => "Active",
+        "exp_date" => "${expira}",
+        "username" => "${cliente}",
+        "password" => "${senha}"
+    ]
+];
+header('Content-Type: application/json');
+echo json_encode($data);`;
+
+            const url = `https://api.github.com/repos/BRASILCANAISLTDA/painelbrxtremee/contents/clientes/${cliente}/index.php`;
+
+            statusDiv.innerHTML = "Processando... aguarde.";
+
+            try {
+                const res = await fetch(url, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: `Novo cliente: ${cliente}`,
+                        content: btoa(conteudoPHP)
+                    })
+                });
+
+                if(res.ok) {
+                    statusDiv.innerHTML = `<b style="color: #28a745;">✅ Sucesso!</b><br>URL do Cliente: <br> <code>http://BRASILCANAISLTDA.github.io/painelbrxtremee/clientes/${cliente}</code>`;
+                } else {
+                    statusDiv.innerHTML = "❌ Erro ao criar. Verifique o Token.";
+                }
+            } catch (e) {
+                statusDiv.innerHTML = "Erro de conexão.";
+            }
+        }
+    </script>
+</body>
+</html>
