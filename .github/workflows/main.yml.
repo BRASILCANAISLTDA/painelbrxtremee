@@ -1,0 +1,20 @@
+name: Atualizar Canais IPTV
+on:
+  schedule:
+    - cron: '0 0 * * *' # Roda todo dia à meia-noite
+  workflow_dispatch: # Permite rodar manualmente
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Rodar Script Conversor
+        run: python atualizar_lista.py
+      - name: Salvar Mudanças
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add canais.json
+          git commit -m "Lista atualizada" || exit 0
+          git push
