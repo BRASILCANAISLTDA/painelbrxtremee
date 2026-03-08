@@ -1,0 +1,16 @@
+[
+  {
+    "nome": "João Exemplo",
+    "user": "joao123",
+    "pass": "4002",
+    "vencimento": "2024-05-15",
+    "status": "ativo"
+  },
+  {
+    "nome": "Maria Vip",
+    "user": "maria88",
+    "pass": "5566",
+    "vencimento": "2099-12-31",
+    "status": "vitalicio"
+  }
+]
