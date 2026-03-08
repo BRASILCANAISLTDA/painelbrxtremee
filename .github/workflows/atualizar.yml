@@ -19,6 +19,7 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+          git pull --rebase origin main
           git add canais.json
           git commit -m "Canais e categorias atualizados" || exit 0
-          git push
+          git push origin main
