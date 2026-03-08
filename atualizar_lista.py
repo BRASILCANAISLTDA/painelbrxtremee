@@ -3,7 +3,7 @@ import json
 import re
 
 # O uso de """ evita que o link quebre a linha no Python
-M3U_URL = """https://docs.google.com/uc?export=download&id=1vKK2BloFf5D3XLk6emMiHjf_kSENrOxL"""
+M3U_URL = """https://drive.google.com/file/d/1vKK2BLoFf5D3XLk6emMiHjf_kSENrOxL/view"""
 
 def processar():
     try:
