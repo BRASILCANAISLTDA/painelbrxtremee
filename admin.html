@@ -1,86 +1,49 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>Painel BR XTREME - Gestão</title>
+    <title>Meu Painel IPTV</title>
     <style>
-        body { font-family: sans-serif; background: #121212; color: white; padding: 20px; }
-        .card { background: #1e1e1e; padding: 20px; border-radius: 8px; max-width: 500px; margin-bottom: 20px; }
-        input, button { width: 100%; padding: 10px; margin: 10px 0; border-radius: 4px; border: none; }
-        button { background: #28a745; color: white; cursor: pointer; font-weight: bold; }
-        button:hover { background: #218838; }
-        .token-sec { background: #333; padding: 10px; font-size: 12px; margin-bottom: 20px; }
+        body { font-family: sans-serif; background: #121212; color: white; padding: 40px; text-align: center; }
+        .container { background: #1e1e1e; padding: 20px; border-radius: 10px; display: inline-block; text-align: left; }
+        input, button { display: block; width: 100%; margin: 10px 0; padding: 10px; border-radius: 5px; border: none; }
+        button { background: #28a745; color: white; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
-    <h2>🚀 Gerenciador de Clientes IPTV</h2>
-    
-    <div class="token-sec">
-        <input type="password" id="githubToken" placeholder="Cole seu Token do GitHub aqui">
+    <h1>🚀 Painel BR XTREME</h1>
+    <div class="container">
+        <label>Token do GitHub:</label>
+        <input type="password" id="token" placeholder="Cole seu token aqui">
+        <hr>
+        <label>Nome do Cliente:</label>
+        <input type="text" id="user" placeholder="Ex: joao_iptv">
+        <label>Senha do Cliente:</label>
+        <input type="text" id="pass" placeholder="Ex: 123456">
+        <button onclick="criarCliente()">CRIAR CLIENTE AGORA</button>
     </div>
-
-    <div class="card">
-        <h3>Cadastrar Novo Cliente</h3>
-        <input type="text" id="nomeCliente" placeholder="Nome do Cliente (ex: joao_silva)">
-        <input type="text" id="senhaCliente" placeholder="Defina uma Senha">
-        <select id="diasAcesso" style="width: 100%; padding: 10px; margin: 10px 0;">
-            <option value="1">Teste 24 Horas</option>
-            <option value="30">Mensal (30 dias)</option>
-            <option value="365">Anual (365 dias)</option>
-        </select>
-        <button onclick="gerarCliente()">Criar Acesso Vitalício/Data</button>
-    </div>
-
-    <div id="status"></div>
 
     <script>
-        async function gerarCliente() {
-            const token = document.getElementById('githubToken').value;
-            const cliente = document.getElementById('nomeCliente').value.trim();
-            const senha = document.getElementById('senhaCliente').value;
-            const dias = document.getElementById('diasAcesso').value;
-            const statusDiv = document.getElementById('status');
+        async function criarCliente() {
+            const token = document.getElementById('token').value;
+            const user = document.getElementById('user').value;
+            const pass = document.getElementById('pass').value;
 
-            if(!token || !cliente) return alert("Preencha o Token e o Nome!");
+            if(!token || !user) return alert("Preencha o Token e o Usuário!");
 
-            // Cálculo da Data de Expiração (Timestamp)
-            const expira = Math.floor(Date.now() / 1000) + (dias * 86400);
-            
-            const conteudoPHP = `<?php
-$data = [
-    "user_info" => [
-        "auth" => 1,
-        "status" => "Active",
-        "exp_date" => "${expira}",
-        "username" => "${cliente}",
-        "password" => "${senha}"
-    ]
-];
-header('Content-Type: application/json');
-echo json_encode($data);`;
+            const expira = Math.floor(Date.now() / 1000) + (30 * 86400); // 30 dias
+            const conteudo = btoa(`<?php echo json_encode(["user_info" => ["auth" => 1, "status" => "Active", "exp_date" => "${expira}", "username" => "${user}", "password" => "${pass}"]]); ?>`);
 
-            const url = `https://api.github.com/repos/BRASILCANAISLTDA/painelbrxtremee/contents/clientes/${cliente}/index.php`;
+            const url = `https://api.github.com/repos/BRASILCANAISLTDA/painelbrxtremee/contents/clientes/${user}/index.php`;
 
-            statusDiv.innerHTML = "Processando... aguarde.";
+            const res = await fetch(url, {
+                method: 'PUT',
+                headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: `Novo cliente ${user}`, content: conteudo })
+            });
 
-            try {
-                const res = await fetch(url, {
-                    method: 'PUT',
-                    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        message: `Novo cliente: ${cliente}`,
-                        content: btoa(conteudoPHP)
-                    })
-                });
-
-                if(res.ok) {
-                    statusDiv.innerHTML = `<b style="color: #28a745;">✅ Sucesso!</b><br>URL do Cliente: <br> <code>http://BRASILCANAISLTDA.github.io/painelbrxtremee/clientes/${cliente}</code>`;
-                } else {
-                    statusDiv.innerHTML = "❌ Erro ao criar. Verifique o Token.";
-                }
-            } catch (e) {
-                statusDiv.innerHTML = "Erro de conexão.";
-            }
+            if(res.ok) alert("✅ Cliente criado com sucesso!");
+            else alert("❌ Erro! Verifique seu Token.");
         }
     </script>
 </body>
