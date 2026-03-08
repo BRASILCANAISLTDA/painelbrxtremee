@@ -1,0 +1,39 @@
+import requests
+import json
+import re
+
+# COLOQUE O LINK DA SUA LISTA M3U AQUI
+M3U_URL = "http://link-da-sua-lista.com/lista.m3u"
+
+def baixar_m3u():
+    r = requests.get(M3U_URL)
+    lines = r.text.split('\n')
+    
+    canais = []
+    categorias = set()
+    
+    for i in range(len(lines)):
+        if lines[i].startswith('#EXTINF'):
+            # Puxa o nome e a categoria (group-title)
+            info = lines[i]
+            url = lines[i+1] if i+1 < len(lines) else ""
+            
+            nome = re.search(r',(.+)$', info).group(1) if ',' in info else "Sem Nome"
+            cat = re.search(r'group-title="([^"]+)"', info).group(1) if 'group-title' in info else "Geral"
+            logo = re.search(r'tvg-logo="([^"]+)"', info).group(1) if 'tvg-logo' in info else ""
+            
+            categorias.add(cat)
+            canais.append({
+                "name": nome.strip(),
+                "category_name": cat,
+                "url": url.strip(),
+                "icon": logo
+            })
+    return canais, list(categorias)
+
+# Gera o arquivo canais.json que o Smarters vai ler
+canais, cats = baixar_m3u()
+data = {"live": canais, "categories": cats}
+
+with open('canais.json', 'w') as f:
+    json.dump(data, f, indent=4)
