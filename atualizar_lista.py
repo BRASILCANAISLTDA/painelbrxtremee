@@ -3,7 +3,7 @@ import json
 import re
 
 # Usamos as aspas triplas para garantir que a URL seja lida como um texto único
-M3U_URL = """https://drive.google.com/file/d/1vKK2BLoFf5D3XLk6emMiHjf_kSENrOxL/view?usp=drive_link, https://drive.google.com/file/d/1hsgIgHruheVVohyk9f_0HD5_l2EEZ1Ty/view?usp=drive_link, https://drive.google.com/file/d/1-wxqQ_liEZRQgmT4c95x1OdXIEc6shLH/view?usp=drive_link, https://drive.google.com/file/d/1a4j_ye4y7LYgAIt4sebXHdzh5eUmflkD/view?usp=drive_link, https://drive.google.com/file/d/1zYsjUOD0yaYyGTH4GXOxVkPYndoXItRf/view?usp=drive_link, https://drive.google.com/file/d/1cibQesdkDkay_fBjNkosB2q17U0SlUk3/view?usp=drive_link"""
+M3U_URL = """https://drive.google.com/file/d/1vKK2BLoFf5D3XLk6emMiHjf_kSENrOxL/view"""
 
 def processar():
     try:
