@@ -1,0 +1,32 @@
+// Função para verificar se o acesso expirou
+function verificarAcesso(cliente) {
+    const hoje = new Date();
+    const dataVencimento = new Date(cliente.vencimento);
+
+    // Se for vitalício (data muito no futuro) ou se hoje for antes do vencimento
+    if (cliente.status === "vitalicio" || dataVencimento >= hoje) {
+        return { autorizado: true, mensagem: "Acesso Liberado!" };
+    } else {
+        return { autorizado: false, mensagem: "Sua conta expirou. Fale com o suporte." };
+    }
+}
+
+// Exemplo de uso ao carregar a página
+async function login(usuarioDigitado, senhaDigitada) {
+    const resposta = await fetch('clientes.json');
+    const clientes = await resposta.json();
+
+    const usuarioEncontrado = clientes.find(c => c.user === usuarioDigitado && c.pass === senhaDigitada);
+
+    if (usuarioEncontrado) {
+        const status = verificarAcesso(usuarioEncontrado);
+        if (status.autorizado) {
+            alert(status.mensagem);
+            // Aqui você libera o link da lista M3U
+        } else {
+            alert(status.mensagem);
+        }
+    } else {
+        alert("Usuário ou senha incorretos.");
+    }
+}
