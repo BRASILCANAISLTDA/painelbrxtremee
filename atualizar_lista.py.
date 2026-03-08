@@ -3,7 +3,7 @@ import json
 import re
 
 # COLOQUE O LINK DA SUA LISTA M3U AQUI
-M3U_URL = "http://link-da-sua-lista.com/lista.m3u"
+M3U_URL = "https://drive.google.com/drive/folders/1khOHnIttqpLtB7BeSnyVf83_PodVjkxE?usp=drive_link"
 
 def baixar_m3u():
     r = requests.get(M3U_URL)
