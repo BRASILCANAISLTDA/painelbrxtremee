@@ -3,8 +3,7 @@ import json
 import re
 
 # COLOQUE SEU LINK M3U ABAIXO
-M3U_URL = "https://drive.google.com/file/d/1vKK2BLoFf5D3XLk6emMiHjf_kSENrOxL/view?usp=drive_link, https://drive.google.com/file/d/1hsgIgHruheVVohyk9f_0HD5_l2EEZ1Ty/view?usp=drive_link, https://drive.google.com/file/d/1-wxqQ_liEZRQgmT4c95x1OdXIEc6shLH/view?usp=drive_link, https://drive.google.com/file/d/1a4j_ye4y7LYgAIt4sebXHdzh5eUmflkD/view?usp=drive_link, https://drive.google.com/file/d/1zYsjUOD0yaYyGTH4GXOxVkPYndoXItRf/view?usp=drive_link, https://drive.google.com/file/d/1cibQesdkDkay_fBjNkosB2q17U0SlUk3/view?usp=drive_link, https://drive.google.com/file/d/1ln9JEKkxsEqbLzS3CBDBP9zMIeGpjUFN/view?usp=drive_link, https://drive.google.com/file/d/1FehlTafkfp3iNmlbNVRwQgMZzF10-g7F/view?usp=drive_link, https://drive.google.com/file/d/1M7z_Rc81VlOwfO28fnWwATDdPomCV5Dl/view?usp=drive_link, https://drive.google.com/file/d/17ypu7do9W8dzCYD_y0cOAuAco0PAaCpn/view?usp=drive_link"
-
+M3U_URL = "https://drive.google.com/drive/folders/1PR4Pfftut-cJQxFY-ElxIJZBrJaNrlCW?usp=drive_link"
 def processar():
     try:
         r = requests.get(M3U_URL, timeout=30)
