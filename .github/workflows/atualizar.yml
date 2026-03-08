@@ -17,7 +17,14 @@ jobs:
         run: python atualizar_lista.py
       - name: Salvar no GitHub
         run: |
+          - name: Salvar no GitHub
+        run: |
           git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git pull --rebase origin main
+          git add canais.json
+          git commit -m "Canais atualizados sem conflito" || exit 0
+          git push origin main
           git config --local user.name "GitHub Action"
           git pull --rebase origin main
           git add canais.json
