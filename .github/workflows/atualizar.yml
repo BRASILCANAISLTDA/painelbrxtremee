@@ -1,0 +1,24 @@
+name: Gerador de Categorias IPTV
+on:
+  workflow_dispatch: # Isso cria um botão para você apertar e atualizar quando quiser
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      - name: Instalar dependências
+        run: pip install requests
+      - name: Rodar Script Conversor
+        run: python atualizar_lista.py
+      - name: Salvar no GitHub
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add canais.json
+          git commit -m "Canais e categorias atualizados" || exit 0
+          git push
